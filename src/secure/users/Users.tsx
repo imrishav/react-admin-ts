@@ -1,17 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import Axios from 'axios';
-import Wrapper from './Wrappers';
-import { User } from '../classes/User';
+import Wrapper from '../Wrappers';
+import { User } from '../../classes/User';
 import { Link } from 'react-router-dom';
 
+// interface IState {
+// 	data: any[];
+// 	links: any;
+// 	meta: any;
+// }
+
 const Users = () => {
-	const [users, setUsers] = useState<null | { data: any }>(null);
+	const [users, setUsers] = useState<any[]>([]);
 	let [page, setPage] = useState(1);
 	let [lastPage, setLastPage] = useState(0);
 
 	const getUsers = async () => {
 		const res = await Axios.get(`users?page=${page}`);
-		setUsers(res.data);
+		setUsers(res.data.data);
 		setLastPage(res.data.meta.last_page);
 	};
 
@@ -31,9 +37,17 @@ const Users = () => {
 		setPage(page--);
 		await getUsers();
 	};
-	console.log('page', page);
 
-	// console.log('resof users', users);
+	const handleDelete = async (id: number) => {
+		if (window.confirm('Are you sure?')) {
+			await Axios.delete(`users/${id}`);
+
+			// setUsers(users?.data.filter((u: User) => u.id !== id));
+			setUsers(users.filter((u: User) => u.id !== id));
+		}
+	};
+
+	console.log('hit//', users);
 	return (
 		<Wrapper>
 			{' '}
@@ -44,7 +58,7 @@ const Users = () => {
 							type="button"
 							className="btn btn-sm btn-outline-secondary"
 						>
-							<Link to={'users/create'}>Add User</Link>
+							<Link to={'users/add'}>Add User</Link>
 						</button>
 					</div>
 				</div>
@@ -62,7 +76,7 @@ const Users = () => {
 						</tr>
 					</thead>
 					{users &&
-						users!.data.map((user: User) => {
+						users.map((user: User) => {
 							return (
 								<tbody key={user.id}>
 									<tr>
@@ -74,15 +88,18 @@ const Users = () => {
 										<td>{user.role.name}</td>
 										<td>
 											<div className="btn-group mr-2">
-												<button
-													type="button"
+												<Link
+													to={`users/${user.id}/edit`}
 													className="btn btn-sm btn-outline-secondary"
 												>
 													Edit
-												</button>
+												</Link>
 												<button
 													type="button"
 													className="btn btn-sm btn-outline-secondary"
+													onClick={() =>
+														handleDelete(user.id)
+													}
 												>
 													Delete
 												</button>

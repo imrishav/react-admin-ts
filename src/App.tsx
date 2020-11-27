@@ -6,8 +6,10 @@ import './App.css';
 import Login from './auth/Login';
 import Register from './auth/Register';
 import { Dashboard } from './secure/Dashboard';
-import Users from './secure/Users';
+import Users from './secure/users/Users';
 import RedirectDashboard from './secure/components/RedirectDashboard';
+import UserCreate from './secure/users/Users-create';
+import UserEdit from './secure/users/User-edit';
 
 Axios.defaults.baseURL = 'http://localhost:8000/api/';
 
@@ -17,7 +19,9 @@ function App() {
 			<BrowserRouter>
 				<Route path="/" exact component={RedirectDashboard} />
 				<Route path="/dashboard" exact component={Dashboard} />
-				<Route path="/users" component={Users} />
+				<Route path="/users" component={Users} exact />
+				<Route path="/users/add" component={UserCreate} />
+				<Route path="/users/:id/edit" component={UserEdit} />
 				<Route path="/login" component={Login} />
 				<Route path="/register" component={Register} />
 			</BrowserRouter>
